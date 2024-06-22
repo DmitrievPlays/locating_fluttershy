@@ -1,6 +1,7 @@
 # locating_fluttershy
 
 ![Flutter logo](https://avatars.githubusercontent.com/u/14101776?s=200&v=4)
+
 My first Flutter project and the first remake of my "brilliant" LocatingFuture (LocatingMe) app
 
 ## Getting Started
