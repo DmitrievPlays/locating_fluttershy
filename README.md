@@ -1,10 +1,13 @@
 # locating_fluttershy
 
-A new Flutter project.
+My first Flutter project and the first remake of my "brilliant" LocatingFuture (LocatingMe) app
 
 ## Getting Started
 
+![Flutter logo](https://avatars.githubusercontent.com/u/14101776?s=200&v=4)
 This project is a starting point for a Flutter application.
+
+
 
 A few resources to get you started if this is your first Flutter project:
 
