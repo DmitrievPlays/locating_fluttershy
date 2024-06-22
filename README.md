@@ -1,4 +1,4 @@
-# locating_fluttershy
+# Locating Fluttershy
 
 ![Flutter logo](https://avatars.githubusercontent.com/u/14101776?s=200&v=4)
 
