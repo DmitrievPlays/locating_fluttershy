@@ -1,7 +1,4 @@
-
 import 'package:flutter/material.dart';
-
-
 
 class TripsPage extends StatefulWidget {
   const TripsPage({super.key, required this.title});
@@ -22,10 +19,9 @@ class TripsPage extends StatefulWidget {
 }
 
 class _TripsPageState extends State<TripsPage> {
-
-
   @override
   Widget build(BuildContext context) {
+    final List<String> items = List<String>.generate(100, (i) => 'Item $i');
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -33,54 +29,23 @@ class _TripsPageState extends State<TripsPage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                        ),
-                        color: Colors.grey,
-                        borderRadius: const BorderRadius.all(Radius.circular(16))),
-                    child: const Column(
-                      children: [
-                        Text('Пройдено',
-                            style:
-                                TextStyle(fontSize: 30, color: Colors.white))
-                      ],
-                    )),
-              ),
-              Expanded(
-                child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                        ),
-                        color: Colors.grey,
-                        borderRadius: const BorderRadius.all(Radius.circular(16))),
-                    child: const Column(
-                      children: [
-                        Text('V Средняя',
-                            style:
-                                TextStyle(fontSize: 30, color: Colors.white))
-                      ],
-                    )),
-              ),
-            ],
-          ),
-        ],
+      body: Container(
+        child: ListView.separated(
+            itemCount: items.length,
+            /*prototypeItem: ListTile(
+              title: Text(items.first),
+            ),*/
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('Route $index'),
+                tileColor: Colors.amber,
+                contentPadding: const EdgeInsets.all(6),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const Divider();
+      },),
       ),
     );
   }
 }
-

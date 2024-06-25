@@ -1,20 +1,19 @@
-// ignore_for_file: unused_import
-
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:locating_fluttershy/about.dart';
+import 'package:locating_fluttershy/database.dart';
 import 'package:locating_fluttershy/home.dart';
 import 'package:locating_fluttershy/trips.dart';
+import 'package:locating_fluttershy/location_service.dart';
+import 'package:workmanager/workmanager.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   // This widget is the root of your application.
   @override
@@ -22,8 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: const Color.fromARGB(0, 0, 129, 112)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(0, 0, 129, 112)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: "Locating Fluttershy"),
@@ -49,12 +48,59 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+@pragma(
+    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    print(
+        "Native called background task: $task"); //simpleTask will be emitted here.
+    return Future.value(true);
+  });
+}
+
+// class DatabaseHelper {
+//   static Database? _database;
+
+//   void openDatabase() async {
+//     //final db = await openDatabase('my_database.db');
+//   }
+
+//   // Future<Database> get database async {
+//   //   if (_database != null) return _database!;
+
+//   //   // if _database is null we instantiate it
+//   //   _database = await initDB();
+//   //   DatabaseHelper.
+//   //   return _database!;
+//   // }
+// }
+
 class _MyHomePageState extends State<MyHomePage> {
-  
+  @override
+  void initState() {
+    super.initState();
+    DatabaseHelper.initDB();
+
+    //_database = initDB();
+
+    determinePosition().then((pos) {
+      print(pos);
+    });
+
+    initializeLocationUpdater().listen((pos) {
+      print('${pos.latitude}; ${pos.longitude}');
+    });
+
+    Workmanager().initialize(
+      callbackDispatcher, // The top level function, aka callbackDispatcher
+      // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+    );
+    Workmanager().registerOneOffTask("task-identifier", "simpleTask");
+  }
+
   int index = 0;
   //int _travelled = 0;
   //final int _speed_avg = 0;
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
           TripsPage(title: "Trips"),
           AboutPage(title: "About")
         ],
-      ), 
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
@@ -94,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: index,
         selectedItemColor: Colors.teal[300],
-         onTap: (int newindex) {
+        onTap: (int newindex) {
           setState(() {
             index = newindex;
           });
