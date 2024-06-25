@@ -1,10 +1,11 @@
-# locating_fluttershy
+# Locating Fluttershy
 
-A new Flutter project.
+![Flutter logo](https://avatars.githubusercontent.com/u/14101776?s=200&v=4)
+![Fluttershy logo](https://static.wikia.nocookie.net/anime-allstar/images/b/b7/Images.jpg/revision/latest/scale-to-width-down/211?cb=20140812154210)
+
+My first Flutter project and the first remake of my "brilliant" LocatingFuture (LocatingMe) app
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
 
