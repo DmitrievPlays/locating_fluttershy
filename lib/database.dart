@@ -10,6 +10,13 @@ class DatabaseHelper {
     return res;
   }
 
+    static newLocation(name, lat, lon, date) async {
+    final db = database;
+    var res = await db!.rawInsert("INSERT Into Locations (name,lat,lon,date)"
+        " VALUES ('$name', $lat, $lon, $date);");
+    return res;
+  }
+
   static Future<Database> initDB() async {
     String documentsDirectory = "/storage/emulated/0/Documents";
     String path = '$documentsDirectory/TestDB.db';
@@ -21,7 +28,7 @@ class DatabaseHelper {
       db.execute("CREATE TABLE Locations ("
           "name TEXT,"
           "lat REAL,"
-          "lon REAL"
+          "lon REAL,"
           "date INTEGER"
           ")");
 
