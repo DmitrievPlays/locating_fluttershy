@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:locating_fluttershy/about.dart';
+import 'package:locating_fluttershy/data.dart';
 import 'package:locating_fluttershy/database.dart';
 import 'package:locating_fluttershy/home.dart';
 import 'package:locating_fluttershy/trips.dart';
@@ -58,24 +59,9 @@ void callbackDispatcher() {
   });
 }
 
-// class DatabaseHelper {
-//   static Database? _database;
-
-//   void openDatabase() async {
-//     //final db = await openDatabase('my_database.db');
-//   }
-
-//   // Future<Database> get database async {
-//   //   if (_database != null) return _database!;
-
-//   //   // if _database is null we instantiate it
-//   //   _database = await initDB();
-//   //   DatabaseHelper.
-//   //   return _database!;
-//   // }
-// }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //_database = initDB();
 
     determinePosition().then((pos) {
+      Data.loc = pos;
       print(pos);
     });
 
