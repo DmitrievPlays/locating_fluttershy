@@ -1,20 +1,27 @@
 import 'package:sqflite/sqflite.dart';
 
+
 class DatabaseHelper {
   static Database? database;
 
-  static newRoute() async {
+  static newRoute(distance, date) async {
     final db = database;
-    var res = await db!.rawInsert("INSERT Into Routes (distance,date)"
-        " VALUES ('2', '3');");
+    var res = await db!.rawInsert("INSERT INTO Routes (distance,date)"
+        " VALUES ('$distance', '$date');");
     return res;
   }
 
     static newLocation(name, lat, lon, date) async {
     final db = database;
-    var res = await db!.rawInsert("INSERT Into Locations (name,lat,lon,date)"
+    var res = await db!.rawInsert("INSERT INTO Locations (name,lat,lon,date)"
         " VALUES ('$name', $lat, $lon, $date);");
     return res;
+  }
+
+  static Future<List<Map<String, Object?>>> getRoutes() async {
+    final db = database;
+    final List<Map<String, Object?>> routeMaps = await db!.query("Routes");
+    return routeMaps;
   }
 
   static Future<Database> initDB() async {
