@@ -1,3 +1,4 @@
-class Data{
-  //NOT IMPLEMENTED
+
+class DataProvider {
+  static double DataSpeed = 0;
 }

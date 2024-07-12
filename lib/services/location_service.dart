@@ -1,53 +1,68 @@
 import 'dart:async';
-
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:locating_fluttershy/main.dart';
-import 'package:locating_fluttershy/services/database_service.dart';
 import 'package:intl/intl.dart';
 
-
 class LocationService {
+
   LocationSettings? locationSettings;
   Position? prevLoc;
+  double speed = 0;
   double tripLength = 0.0;
-  StreamSubscription? sub;
+  StreamSubscription? distanceUpdater;
   bool isEnabled = false;
+
 
   Stream<Position> initializeLocationUpdater() {
     locationSettings = AndroidSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 20,
+      accuracy: LocationAccuracy.best,
+      distanceFilter: 0,
       forceLocationManager: true,
-      intervalDuration: const Duration(seconds: 5),
+      intervalDuration: const Duration(seconds: 1),
     );
 
     return Geolocator.getPositionStream(locationSettings: locationSettings);
   }
 
-
-  Future<bool>isServiceEnabled() async {
+  Future<bool> isServiceEnabled() async {
     return Future.value(isEnabled);
   }
 
-  Future<void> enableListener() async{
+  Future<void> enableListener() async {
     isEnabled = true;
-    sub = initializeLocationUpdater().listen((pos) {
+    distanceUpdater = initializeLocationUpdater().listen((pos) {
       if (prevLoc != null) {
-        ls.tripLength += (Geolocator.distanceBetween(prevLoc!.latitude,
-            prevLoc!.longitude, pos.latitude, pos.longitude) / 1000);
+        if (Geolocator.distanceBetween(prevLoc!.latitude, prevLoc!.longitude,
+            pos.latitude, pos.longitude) >
+            20) {
+          tripLength += (Geolocator.distanceBetween(prevLoc!.latitude,
+              prevLoc!.longitude, pos.latitude, pos.longitude) /
+              1000);
+          prevLoc = pos;
+        }
       }
-      prevLoc = pos;
+      prevLoc ??= pos;
+      speed = pos.speed * 3.6;
+      return distanceUpdater?.resume();
     });
-    return sub?.resume();
+
+    Timer.periodic(const Duration(milliseconds: 1000), (Timer t) async {
+      if (kDebugMode) {
+        print("SPEED $speed");
+      }
+    });
   }
 
-  Future<void> disableListener() async{
+
+  Future<void> disableListener() async {
     isEnabled = false;
-    service.invoke("stopService");
-    DatabaseHelper.newRoute(ls.tripLength, DateFormat("yyyy-MM-dd").format(DateTime.now()));
-    return sub?.cancel();
-  }
+    helper.newRoute(
+        tripLength, DateFormat("yyyy-MM-dd").format(DateTime.now()));
 
+    service.invoke("stopService");
+    return distanceUpdater?.cancel();
+  }
 
   Future<Position> determinePosition() async {
     bool serviceEnabled;
@@ -74,5 +89,3 @@ class LocationService {
     return await Geolocator.getCurrentPosition();
   }
 }
-
-

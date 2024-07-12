@@ -34,7 +34,14 @@ class _AboutPageState extends State<AboutPage> {
         children: <Widget>[
           Column(
             children: <Widget>[
-              IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage()));}, icon: const Icon(Icons.settings)),
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsPage()));
+                  },
+                  icon: const Icon(Icons.settings)),
               const Image(image: AssetImage('assets/fluttershy.png')),
               const SizedBox(
                   width: double.infinity,
