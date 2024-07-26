@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:injector/injector.dart';
 import 'package:locating_fluttershy/services/weather_service.dart';
 import '../main.dart';
 import '../services/location_service.dart';
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -29,12 +28,14 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
+    print("app");
+
     timer = Timer.periodic(
         const Duration(seconds: 60 * 15), (Timer t) => weatherUpdate());
     timerUpdater =
         Timer.periodic(const Duration(milliseconds: 1000), (Timer t) async {
-          screenUpdate();
-        });
+      screenUpdate();
+    });
     weatherUpdate();
   }
 
@@ -105,7 +106,8 @@ class _HomePageState extends State<HomePage> {
                                         onPressed: () {
                                           helper.newLocation(
                                               nameController.text,
-                                              null,null,
+                                              null,
+                                              null,
                                               //ls?.prevLoc?.latitude,
                                               //ls?.prevLoc?.longitude,
                                               DateTime.now()
@@ -156,19 +158,40 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Column(
-                                children: [
-                                  Text("${result["current_trip_length"]}",
-                                      style: const TextStyle(
-                                          fontSize: 64, height: 1)),
-                                ],
-                              ),),
-                          const Text(
-                            'KM',
-                            style: TextStyle(fontSize: 18, height: 1),
-                            textAlign: TextAlign.center,
+                            fit: BoxFit.scaleDown,
+                            child: Column(
+                              children: [
+                                Text("${result["current_trip_length"]}",
+                                    style: const TextStyle(
+                                        fontSize: 64, height: 1)),
+                              ],
+                            ),
                           ),
+                          StreamBuilder<Map<String, dynamic>?>(
+                            stream: FlutterBackgroundService().on('update'),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+
+                              final data = snapshot.data!;
+                              double? length = data["tripLength"];
+                              double? speed = data["speed"];
+                              return Column(
+                                children: [
+                                  Text(length.toString()),
+                                  Text(speed.toString()),
+                                ],
+                              );
+                            },
+                          ),
+                          // const Text(
+                          //   'KM',
+                          //   style: TextStyle(fontSize: 18, height: 1),
+                          //   textAlign: TextAlign.center,
+                          // ),
                         ],
                       ),
                     )
@@ -208,15 +231,15 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child:
-                              Column(
-                                children: [
-                                  Text("${result["current_speed"]}",
-                                               style: const TextStyle(
-                                                   fontSize: 64, height: 1)),
-                                ],
-                              ),),
+                            fit: BoxFit.scaleDown,
+                            child: Column(
+                              children: [
+                                Text("${result["current_speed"]}",
+                                    style: const TextStyle(
+                                        fontSize: 64, height: 1)),
+                              ],
+                            ),
+                          ),
                           const Text(
                             'KM/H',
                             style: TextStyle(fontSize: 18, height: 1),
@@ -255,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                 child: IconButton.filled(
                   icon: const Icon(Icons.add),
                   onPressed: () {
-                    final ls = Injector.appInstance.get<LocationService>();
+                    final ls = LocationService();
                     print(ls.speed);
                     addLocationDialog();
                   },
@@ -282,13 +305,13 @@ class _HomePageState extends State<HomePage> {
                         : service.startService();
                   });
                 },
-                label: Row(
+                label: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
                       //service ? "STOP" : "START",
                       "BTN",
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16),
                     ),
                   ],
                 ),

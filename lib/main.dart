@@ -4,9 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:injector/injector.dart';
 import 'package:locating_fluttershy/activities/about.dart';
-import 'package:locating_fluttershy/common/service_init.dart';
 import 'package:locating_fluttershy/providers/permission_provider.dart';
 import 'package:locating_fluttershy/providers/settings_provider.dart';
 import 'package:locating_fluttershy/services/database_service.dart';
@@ -18,10 +16,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  ServiceInit.initialize();
+  initializeService();
   runApp(const MyApp());
 }
 
@@ -30,7 +27,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return ChangeNotifierProvider(
         create: (_) => SettingsProvider(),
         child: Consumer<SettingsProvider>(
@@ -55,13 +51,12 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-
 DatabaseHelper helper = DatabaseHelper();
 
-// @pragma('vm:entry-point')
-void startService(ServiceInstance service, ValueSetter<double> speed) async {
+@pragma('vm:entry-point')
+void startService(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
-  final ls = Injector.appInstance.get<LocationService>();
+  final ls = LocationService();
 
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
@@ -73,7 +68,6 @@ void startService(ServiceInstance service, ValueSetter<double> speed) async {
   }
   service.on('stopService').listen((event) async {
     await service.stopSelf();
-    IsolateNameServer.removePortNameMapping('mainIsolate');
   });
   service.invoke("setAsBackground");
 
@@ -94,7 +88,14 @@ void startService(ServiceInstance service, ValueSetter<double> speed) async {
             priority: Priority.max),
       ),
     );
-    speed(ls.speed);
+
+    service.invoke(
+      'update',
+      {
+        "tripLength": LocationService().tripLength,
+        "speed": LocationService().speed,
+      },
+    );
   });
   await ls.enableListener();
 }
@@ -102,24 +103,15 @@ void startService(ServiceInstance service, ValueSetter<double> speed) async {
 final service = FlutterBackgroundService();
 
 Future<void> initializeService() async {
-
   await service.configure(
       androidConfiguration: AndroidConfiguration(
-        onStart: (inst){
-          startService(inst, (speed){
-            print("--- $speed");
-          });
-        },
+        onStart: startService,
         isForegroundMode: true,
         autoStart: true,
       ),
       iosConfiguration: IosConfiguration(
         autoStart: true,
-        onForeground: (inst){
-          startService(inst, (speed){
-            print("--- $speed");
-          });
-        },
+        onForeground: startService,
         onBackground: null,
       ));
   service.invoke("setAsBackground");
@@ -136,16 +128,15 @@ class _MyHomePageState extends State<MyHomePage> {
     PermissionProvider.requestPermission(Permission.manageExternalStorage);
     helper.initDB();
     isWakelock();
-    getData();
+    //getData();
   }
 
-  void getData() async{
-    Timer.periodic(const Duration(seconds: 1), (timer)  {
-      final ls = Injector.appInstance.get<LocationService>();
-      print("data speed ${ls.speed}");
-    });
-  }
-
+  // void getData() async {
+  //   Timer.periodic(const Duration(seconds: 1), (timer) {
+  //     final ls = Injector.appInstance.get<LocationService>();
+  //     print("data speed ${ls.speed}");
+  //   });
+  // }
 
   void isWakelock() async {
     SettingsProvider provider = SettingsProvider();

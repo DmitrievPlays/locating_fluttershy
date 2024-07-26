@@ -16,6 +16,12 @@
             "flutterMode": "profile"
         },
         {
+            "name": "locating_fluttershy (debug mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug"
+        },
+        {
             "name": "locating_fluttershy (release mode)",
             "request": "launch",
             "type": "dart",

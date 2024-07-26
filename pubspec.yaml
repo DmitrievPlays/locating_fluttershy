@@ -34,7 +34,6 @@ dependencies:
   permission_handler: ^11.3.1
   wakelock_plus: ^1.2.5
   socket_io_client: ^2.0.3+1
-  injector: ^3.0.0
 
 
 dev_dependencies:

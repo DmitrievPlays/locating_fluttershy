@@ -5,6 +5,11 @@ import 'package:locating_fluttershy/main.dart';
 import 'package:intl/intl.dart';
 
 class LocationService {
+  static LocationService? _instance;
+
+  LocationService._();
+
+  factory LocationService() => _instance ??= LocationService._();
 
   LocationSettings? locationSettings;
   Position? prevLoc;
@@ -30,6 +35,7 @@ class LocationService {
   }
 
   Future<void> enableListener() async {
+    print("listener enabled");
     isEnabled = true;
     distanceUpdater = initializeLocationUpdater().listen((pos) {
       if (prevLoc != null) {
