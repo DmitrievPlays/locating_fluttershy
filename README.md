@@ -1,7 +1,6 @@
 # Locating Fluttershy
 
 ![Flutter logo](https://avatars.githubusercontent.com/u/14101776?s=200&v=4)
-![Fluttershy logo](https://static.wikia.nocookie.net/anime-allstar/images/b/b7/Images.jpg/revision/latest/scale-to-width-down/211?cb=20140812154210)
 
 My first Flutter project and the first remake of my "brilliant" LocatingFuture (LocatingMe) app
 
